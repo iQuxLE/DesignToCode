@@ -21,7 +21,9 @@ class PromptGenerator:
                         describes all objects and its parameter for the given picture to be implemented into HTML.
                         
                         Additional context: {json_context}
+                        
                         """
+                     # TODO: probably also put this in json format to have a pydantic model just track all steps and for future training
                      },
                     {"type": "image_url",
                      "image_url": f"data:image/jpeg;base64,{base64_image}"}
@@ -55,11 +57,15 @@ class PromptGenerator:
                         The JSON context: \n
                         {old_json_context}
                         
-                        Only output the difference of both descriptions into the answer and point out what has to be 
+                        Output the new description.
+                        Output the difference of both descriptions into the answer and point out what has to be 
                         changed to improve it.
-                    
                         
+                        Give the answer in JSON OBJECT format:
+                        So that, new_description is a key and the value the description
+                        and comparison_of_old_and_new_description is a key with value of the comparison description:
                         """
+                     # TODO: Put Old and new and all coming descriptions and comparisons into a JSON
                      },
                     {"type": "image_url",
                      "image_url": f"data:image/jpeg;base64,{old_base64_image}"},
@@ -102,20 +108,24 @@ class PromptGenerator:
             old_description: Optional[str],
             new_description: Optional[str],
             description_comparison: Optional[str],
-            old_code,
+            initial_code,
             json_context: Optional[str] = None
 
         ) -> str:
         prompt_template = (
-            f"You get the old description of a image that should be transferred to html code with help of a JSON context "
-            f"which describes all parameters and objects inside this image as "
+            f"You get the old description of an image that should be transferred to HTML code with the help of a JSON context "
+            f"which describes all css parameters, including orientation/size, position etc of objects inside this image to be implemented in HTML "
             f""
-            f"and the new description and the comparison of descriptions"
+            f"Furthermore you have access to the new description and the comparison of descriptions"
             f"of a previous response to the original image description."
-            f"Given that can you try to find out what you would need to change to the old code."
-            f"Use the JSON context given which contains all data needed from Figma and as \n"
-            f"well the description of the image provided.\n "
             
+            f"Moreover you have the initially generated"
+            f"HTML code to figure out and solve this problem."
+            
+            f"Given all of that you try to find out what you would need to change to the code to come closer to what "
+            f"is expected to fit the criteria of the JSON context and the initial description of the image."
+            f"Use the JSON context given which contains all data needed from Figma as well as the description of the image provided.\n "
+
             f"The old description"
             f"{old_description}"
             
@@ -126,11 +136,65 @@ class PromptGenerator:
             f"{description_comparison}\n\n"
             
             f" Old code:"
-            f" {old_code}"
+            f" {initial_code}"
 
             f"JSON CONTEXT:\n"
             f"{json_context}\n\n"
-            "Make sure the output is a complete html file to be ready to go on the web.\n"
+            "Make sure the output is a complete html file to be ready to go on the web and an updated version of the initial code.\n"
+            "The file should contain the usual start of an html like:"
+            """
+            <!DOCTYPE html>
+            <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <title></title>
+            """
+
+        )
+        return prompt_template
+
+    @staticmethod
+    def generate_updated_code_prompt(
+            old_description: Optional[str],
+            new_description: Optional[str],
+            description_comparison: Optional[str],
+            initial_code,
+            updated_code,
+            json_context: Optional[str] = None
+
+    ) -> str:
+        prompt_template = (
+            f"You get the old description of an image that should be transferred to HTML code with the help of a JSON context "
+            f"which describes all css parameters, including orientation/size, position etc of objects inside this image to be implemented in HTML "
+            f""
+            f"Furthermore you have access to the new description and the comparison of descriptions"
+            f"of a previous response to the original image description. Moreover you have the initially generated "
+            f"HTML code and the updated HTML code to figure out and solve this problem."
+            
+            f"Given all of that you try to find out what you would need to change to the updated code to come closer to what "
+            f"is expected to fit the criteria of the JSON context and the initial description of the image."
+            f"Use the JSON context given which contains all data needed from Figma as well as the description of the image provided.\n "
+
+            f"The old description"
+            f"{old_description}"
+
+            f"The new description: "
+            f"{new_description}"
+
+            f"Comparison to the old description:\n"
+            f"{description_comparison}\n\n"
+
+            f" Old code:"
+            f" {initial_code}"
+            
+            f" Updated code: "
+            f" {updated_code}"
+
+            f"JSON CONTEXT:\n"
+            f"{json_context}\n\n"
+            
+            "Make sure the output is a complete html file to be ready to go on the web and it is an updated to the initial"
+            "and updated code.\n"
             "The file should contain the usual start of an html like:"
             """
             <!DOCTYPE html>

@@ -15,27 +15,64 @@ class Runner:
         json = json_wrapper.read(
             json_source="/Users/carlo/PycharmProjects/DesignToCode/src/DesignToCode/input/json/context.json")
 
-        # # Step 1: Describe the image
-        # description = client.describe_image(
-        #     base64_image=base64image,
-        #     json_context=json
-        #     )
-        # if not description:
-        #     print("Failed to get image description.")
-        #     return
-
-        # print(description)
-
-        # Step 2: Generate code based on the image description
-        # code = client.generate_code(json_context=json, prompt_template=None)
-        # print(code)
-        # if not code:
-        #     print("Failed to generate code.")
-        #     return
-        initial_description, initial_code = client.initialise_html_code(
+        # INITIALISE FIRST IMAGE DESCRIPTION AND INITIAL CODE
+        initial_description, initial_code, image_path = client.initialise_html_code(
                 initial_encoded_img=base64image,
                 figma_json_context=json
             )
+
+        # ENCODE THE NEW IMAGE
+        new_encodedbase64_image = image_encoder.encode_base64(image_path=image_path)
+
+        # START MANUAL ITERATIVE IMPROVEMENT
+        updated_description, updated_comparison, updated_code, updated_image_path = client.iterate_and_improve(
+            initial_encoded_image=base64image,
+            new_encoded_image=new_encodedbase64_image,
+            initial_description=initial_description,
+            figma_json_context=json,
+            initial_code=initial_code,
+        )
+
+
+        new_encodedbase64_image = image_encoder.encode_base64(image_path=updated_image_path)
+
+
+        updated_description, updated_comparison, updated_code, updated_image_path,  = client.iterate_and_improve(
+            initial_encoded_image=base64image,
+            new_encoded_image=new_encodedbase64_image,
+            initial_description=initial_description,
+            figma_json_context=json,
+            initial_code=initial_code,
+            updated_code=updated_code,
+            out="3_iterative_pmg_from_html"
+        )
+
+        new_encodedbase64_image = image_encoder.encode_base64(image_path=updated_image_path)
+
+
+        updated_description, updated_comparison, updated_code, updated_image_path = client.iterate_and_improve(
+            initial_encoded_image=base64image,
+            new_encoded_image=new_encodedbase64_image,
+            initial_description=initial_description,
+            figma_json_context=json,
+            initial_code=initial_code,
+            updated_code=updated_code,
+            out="4_iterative_pmg_from_html"
+        )
+
+        new_encodedbase64_image = image_encoder.encode_base64(image_path=updated_image_path)
+
+        updated_description, updated_comparison, updated_code, updated_image_path = client.iterate_and_improve(
+            initial_encoded_image=base64image,
+            new_encoded_image=new_encodedbase64_image,
+            initial_description=initial_description,
+            figma_json_context=json,
+            initial_code=initial_code,
+            updated_code=updated_code,
+            out="5_iterative_pmg_from_html"
+        )
+
+
 
 if __name__ == "__main__":
     runner = Runner()
