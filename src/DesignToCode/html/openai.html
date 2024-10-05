@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Comparison Bar Graph</title>
+    <style>
+        body {
+            font-family: 'SF Pro Text', sans-serif;
+        }
+        #bar-graph {
+            width: 532px;
+            height: 420px;
+            flex-shrink: 0;
+            border-radius: 24px;
+            border: 1px solid #EFEFEF;
+            background: #FFF;
+            box-shadow: 0px 6px 10px 0px rgba(177, 177, 177, 0.08), 0px 1px 3px 0px rgba(0, 0, 0, 0.02);
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header .title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .header .title span {
+            font-size: 20px;
+            font-weight: 600;
+            color: #080808;
+            letter-spacing: -0.2px;
+        }
+        .bar-container {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 40px;
+        }
+        .bar {
+            width: 24px;
+            border-radius: 4px;
+            background: #FB3B52;
+        }
+        .bar-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            color: #878787;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .y-lines {
+            display: inline-flex;
+            align-items: center;
+            gap: 43px;
+        }
+        .y-line {
+            width: 1px;
+            height: 184px;
+            background: #E9E9E9;
+        }
+    </style>
+</head>
+<body>
+    <div id="bar-graph">
+        <!-- Header -->
+        <div class="header">
+            <div class="title">
+                <div style="width: 24px; height: 24px; background: #FB3B52; border-radius: 50%;"></div>
+                <span>User Comparation</span>
+            </div>
+            <div style="height: 36px; padding: 4px 6px 4px 8px; border-radius: 12px; border: 1px solid #E0E0E0; background: #FFF; box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);">
+                <!-- Additional icons or content -->
+            </div>
+        </div>
+
+        <!-- Y-Lines -->
+        <div class="y-lines">
+            <div class="y-line"></div>
+            <div class="y-line"></div>
+            <div class="y-line"></div>
+            <div class="y-line"></div>
+            <div class="y-line"></div>
+            <div class="y-line"></div>
+            <div class="y-line"></div>
+            <div class="y-line"></div>
+            <div class="y-line"></div>
+            <div class="y-line"></div>
+            <div class="y-line"></div>
+        </div>
+
+        <!-- Bars and Values -->
+        <div class="bar-container">
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <div class="bar" style="height: 152px;"></div>
+                <div>Fortnite</div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <div class="bar" style="height: 369px;"></div>
+                <div>Valorant</div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <div class="bar" style="height: 241px;"></div>
+                <div>Dota 2</div>
+            </div>
+        </div>
+
+        <!-- X Labels -->
+        <div class="bar-labels">
+            <div>0</div>
+            <div>20K</div>
+            <div>40K</div>
+            <div>60K</div>
+            <div>80K</div>
+            <div>100K</div>
+        </div>
+    </div>
+</body>
+</html>

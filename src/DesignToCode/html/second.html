@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        /* Adding CSS styles from JSON context */
+        #bar-graph {
+            width: 532px;
+            height: 420px;
+            flex-shrink: 0;
+            border-radius: 24px;
+            border: 1px solid #EFEFEF;
+            background: #FFF;
+            box-shadow: 0px 6px 10px 0px rgba(177, 177, 177, 0.08), 0px 1px 3px 0px rgba(0, 0, 0, 0.02);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        #y-line {
+            display: inline-flex;
+            align-items: center;
+            gap: 43px;
+        }
+
+        #y-line line {
+            width: 1px;
+            height: 184px;
+            background: #E9E9E9;
+        }
+
+        #header {
+            display: flex;
+            width: 488px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #left-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #game-button {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #calendar {
+            display: flex;
+            height: 36px;
+            padding: 4px 6px 4px 8px;
+            align-items: center;
+            gap: 6px;
+            border-radius: 12px;
+            border: 1px solid #E0E0E0;
+            background: #FFF;
+            box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
+        }
+
+        #value {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 40px;
+        }
+
+        #x-labels {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 11px;
+        }
+
+        #bar {
+            width: 24px;
+            height: 241px;
+            transform: rotate(90deg);
+            flex-shrink: 0;
+            border-radius: 4px;
+            background: #FB3B52;
+        }
+    </style>
+  <title></title>
+</head>
+<body>
+    <div id="bar-graph">
+        <div id="y-line">
+            <div id="line-1"></div>
+            <div id="line-3"></div>
+            <!-- Add remaining lines -->
+        </div>
+        <div id="header">
+            <div id="left-content">
+                <div id="game-button">
+                    <!-- Add game button content -->
+                </div>
+                <!-- Add remaining left content -->
+            </div>
+            <div id="calendar">
+                <!-- Add calendar content -->
+            </div>
+        </div>
+        <div id="value">
+            <!-- Add value content -->
+        </div>
+        <div id="x-labels">
+            <!-- Add x-labels content -->
+        </div>
+        <div id="bar"></div>
+        <!-- Add remaining bars and labels -->
+    </div>
+</body>
+</html>

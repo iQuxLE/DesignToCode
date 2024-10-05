@@ -1,11 +1,18 @@
+import logging
 import os
+import re
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Optional, List, Dict, Any
-
+import convertapi
+from convertapi import client
 from mistralai import Mistral
 from pydantic import BaseModel, Field
 
 from dotenv import load_dotenv
+
+from DesignToCode.client.prompt_generator import PromptGenerator
+
 
 class MistralResponse(BaseModel):
     generated_text: str
@@ -22,6 +29,12 @@ class MistralRequestPayload(BaseModel):
     temperature: float = 0.7
     top_p: float = 1.0
 
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[logging.StreamHandler()]
+)
 
 # MistralClient use
 # -> generate_prompt = PromptGenerator(text, messages)
@@ -50,7 +63,7 @@ class MistralImageToCodeClient:
         self.client = Mistral(self.api_key)
 
 
-    def describe_image(self, base64_image: str) -> Optional[str]:
+    def describe_image(self, prompt) -> Optional[str]:
         """
         Sends an image URL to the image model and retrieves a description.
 
@@ -60,24 +73,10 @@ class MistralImageToCodeClient:
         Returns:
             Optional[str]: Description of the image or None if failed.
         """
-        messages = [
-            {
-                "role": "user",
-                "content": [
-                    {"type": "text", "text": "Describe the given image. The image is a Figma design that has to be implemnted with all its contents."
-                                             "Be as descriptive as possible and try to evaluate all the little aspects and things that should be needed"
-                                             "Together with this you get additional context in form of a JSON which helps you to design css and html and the"
-                                             "You task would be to generate a HTML for the Figma design."
-                                             },
-                    {"type": "image_url",
-                    "image_url": f"data:image/jpeg;base64,{base64_image}"}
-                ]
-            }
-        ]
 
         payload = MistralRequestPayload(
             model=self.img_model,
-            messages=messages
+            messages=prompt,
         )
 
         try:
@@ -85,17 +84,15 @@ class MistralImageToCodeClient:
                 model=payload.model,
                 messages=payload.messages
             )
-            description = response.choices[0].message.content
-            print(f"Image Description: {description}")
-            return description
+            html = response.choices[0].message.content
+            return html
         except Exception as e:
-            print(f"Error describing image: {e}")
+            logging.warning(f"Error describing image: {e}")
             return None
 
-    def design_code_for_img(
+    def generate_code(
             self,
-            description: str,
-            prompt_template: Optional[str] = None,
+            prompt_template: str,
             suffix: Optional[str] = None
     ) -> Optional[str]:
         """
@@ -109,63 +106,106 @@ class MistralImageToCodeClient:
         Returns:
             Optional[str]: Generated code or None if failed.
         """
-        if not prompt_template:
-            prompt_template = f"Based on the following description, write the corresponding code:\n\n{description}\n\nCode:"
-
-        payload = MistralRequestPayload(
-            model=self.code_model,
-            prompt=prompt_template,
-            suffix=suffix if suffix else "",
-            temperature=0,
-            top_p=1.0
-        )
-
         try:
             response = self.client.fim.complete(
-                model=payload.model,
-                prompt=payload.prompt,
-                suffix=payload.suffix,
-                temperature=payload.temperature,
-                top_p=payload.top_p,
+                model=self.code_model,
+                prompt=prompt_template,
+                suffix=suffix if suffix else "",
+                temperature=0,
+                # top_p=1.0,
             )
             code = response.choices[0].message.content
-            print(f"Generated Code:\n{code}")
             return code
         except Exception as e:
-            print(f"Error generating code: {e}")
+            logging.warning(f"Error generating code: {e}")
             return None
 
 
+    @staticmethod
+    def save_generate_code_to_html(code):
+        def extract_html_code(text):
+            pattern = re.compile(r"```html(.*?)```", re.DOTALL)
+            match = pattern.search(text)
 
-    def send_request(self, payload: MistralRequestPayload) -> Optional[Any]:
-        """
-        Sends a generic request to Mistral's API.
-
-        Args:
-            payload (MistralRequestPayload): The request payload.
-
-        Returns:
-            Optional[Any]: The API response or None if failed.
-        """
-        try:
-            if payload.model.startswith("pixtral"):
-                response = self.client.chat.complete(
-                    model=payload.model,
-                    messages=payload.messages
-                )
-            elif payload.model.startswith("codestral"):
-                response = self.client.fim.complete(
-                    model=payload.model,
-                    prompt=payload.prompt,
-                    suffix=payload.suffix,
-                    temperature=payload.temperature,
-                    top_p=payload.top_p,
-                )
+            if match:
+                return match.group(1).strip()
             else:
-                print(f"Unsupported model: {payload.model}")
-                return None
-            return response
-        except Exception as e:
-            print(f"Error sending request: {e}")
-            return None
+                raise ValueError("No HTML code block found in the input text.")
+
+        def save_to_html_file(html_code, file_name="output.html"):
+            file_path = Path(file_name).resolve()
+            logging.info(file_path)
+            file_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(file_path, 'w', encoding='utf-8') as file:
+                file.write(html_code)
+            return file_path
+
+        html_code = extract_html_code(code)
+        file_path = save_to_html_file(html_code, "sample_output.html")
+        return html_code, file_path
+
+    @staticmethod
+    def convertapi_call(convertapi, path, out):
+        # path = path to html generated
+        #
+        convertapi.api_credentials = 'secret_xsDD6o46ZhquOH5H'
+        convertapi.convert('png', {
+            'File': f'{path}',
+            'FileName': f'{out}',
+            'ConversionDelay': '3',
+            'Version': '126'
+        }, from_format='html').save_files("/Users/carlo/PycharmProjects/DesignToCode/src/DesignToCode/output")
+        logging.info("done")
+
+    def initialise_html_code(self, initial_encoded_img, figma_json_context, out: str = "initial_png_from_html", ):
+        prompt_generator = PromptGenerator()
+        initial_pixtral_prompt = prompt_generator.generate_initial_image_description_prompt(initial_encoded_img, figma_json_context)
+
+        image_description = self.describe_image(
+            prompt = initial_pixtral_prompt
+            )
+
+        logging.info("IMAGE DESCRIPTION DONE")
+        logging.info(f"{image_description}")
+
+        initial_code_prompt = prompt_generator.generate_initial_code_prompt(
+            description=image_description,
+            json_context=figma_json_context
+        )
+        code = self.generate_code(
+            prompt_template=initial_code_prompt
+        )
+
+        logging.info("CODE DONE")
+        logging.info(f"{code}")
+
+        # safe to html
+        html_file, path = self.save_generate_code_to_html(code)
+        logging.info(f" PATH = {path}")
+        self.convertapi_call(convertapi, path, out)
+
+        return image_description, code
+
+    def iterate_and_improve(self, initial_encoded_image, initial_description, new_encoded_image, figma_json_context ):
+        prompt_generator = PromptGenerator()
+        compare_description_prompt = prompt_generator.generate_further_iterative_image_description_prompt(
+            old_description=initial_description,
+            old_base64_image=initial_encoded_image,
+            new_base64_image=new_encoded_image,
+            old_json_context=figma_json_context
+        )
+
+        compared_description = self.describe_image(
+            prompt=compare_description_prompt
+        )
+
+        new_code_prompt = prompt_generator.generate_initial_code_prompt(
+            description=compared_description,
+            json_context=figma_json_context
+        )
+
+        code = self.generate_code(
+            prompt_template=new_code_prompt
+        )
+
 

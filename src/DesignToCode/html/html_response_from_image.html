@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Data Table</title>
+    <style>
+        .data-table {
+            width: 1020px;
+            height: 740px;
+            border-radius: 8px;
+            background: #FFF;
+            box-shadow: 0px 0px 0px 1px rgba(152, 161, 178, 0.10), 0px 1px 4px 0px rgba(69, 75, 87, 0.12), 0px 0px 2px 0px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+        .table-header {
+            display: flex;
+            width: 1020px;
+            padding: 12px 0;
+            align-items: center;
+            gap: 2px;
+        }
+        .column-header {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+        .column-name {
+            color: #171C26;
+            font-family: Inter;
+            font-size: 11px;
+            font-weight: 600;
+            line-height: 16px;
+            letter-spacing: 0.44px;
+            text-transform: uppercase;
+        }
+        .table-body {
+            display: flex;
+            flex-direction: column;
+        }
+        .table-row {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            height: 64px;
+            background: #FFF;
+        }
+        .table-row:nth-child(odd) {
+            background: #F9FAFC;
+        }
+        .table-cell {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+        .table-cell:nth-child(1) {
+            width: 36px;
+        }
+        .table-cell:nth-child(2) {
+            width: 150px;
+        }
+        .table-cell:nth-child(3) {
+            width: 238px;
+        }
+        .table-cell:nth-child(4) {
+            width: 100px;
+        }
+        .table-cell:nth-child(5) {
+            width: 100px;
+        }
+        .table-cell:nth-child(6) {
+            width: 100px;
+        }
+        .table-cell:nth-child(7) {
+            width: 100px;
+        }
+        .table-cell:nth-child(8) {
+            width: 100px;
+        }
+        .status-tag {
+            display: inline-flex;
+            padding: 1px 10px;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            border-radius: 10px;
+        }
+        .tag-info {
+            color: #4F5AED;
+            font-family: Inter;
+            font-size: 12px;
+            font-weight: 500;
+            line-height: 18px;
+            letter-spacing: 0.36px;
+        }
+        .tag-success {
+            color: #14804A;
+            font-family: Inter;
+            font-size: 12px;
+            font-weight: 500;
+            line-height: 18px;
+            letter-spacing: 0.36px;
+        }
+        .tag-paid {
+            color: #14804A;
+            font-family: Inter;
+            font-size: 12px;
+            font-weight: 500;
+            line-height: 18px;
+            letter-spacing: 0.36px;
+        }
+        .tag-error {
+            color: #D12953;
+            font-family: Inter;
+            font-size: 12px;
+            font-weight: 500;
+            line-height: 18px;
+            letter-spacing: 0.36px;
+        }
+        .tag-inactive {
+            color: #5A6376;
+            font-family: Inter;
+            font-size: 12px;
+            font-weight: 500;
+            line-height: 18px;
+            letter-spacing: 0.36px;
+        }
+        .table-pagination {
+            display: flex;
+            width: 1020px;
+            padding: 12px 20px;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            background: rgba(244, 247, 252, 0.75);
+            backdrop-filter: blur(4px);
+        }
+        .pagination-info {
+            flex: 1 0 0;
+            color: #687182;
+            font-family: Inter;
+            font-size: 12px;
+            font-weight: 500;
+            line-height: 18px;
+            letter-spacing: 0.36px;
+        }
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 6px;
+            background: #2264E5;
+            box-shadow: 0px 1px 0px 0px #4B85FA inset, 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 0px 0px 1px #2264E5, 0px 2px 5px 0px rgba(34, 100, 229, 0.12);
+        }
+        .button-text {
+            color: #FFF;
+            font-family: Inter;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 20px;
+            letter-spacing: 0.28px;
+        }
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            background: #FFF;
+            box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.06), 0px 0px 0px 1px rgba(104, 113, 130, 0.16);
+        }
+        .search-icon {
+            width: 16px;
+            height: 16px;
+            fill: #868FA0;
+        }
+        .search-input {
+            flex: 1 0 0;
+            color: #A1A9B8;
+            font-family: Inter;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="data-table">
+        <!-- Table Header -->
+        <div class="table-header">
+            <div class="column-header">
+                <div class="column-name">#</div>
+                <div class="column-name">NAME</div>
+                <div class="column-name">DESCRIPTION</div>
+                <div class="column-name">STATUS</div>
+                <div class="column-name">RATE</div>
+                <div class="column-name">BALANCE</div>
+                <div class="column-name">DEPOSIT</div>
+            </div>
+        </div>
+
+        <!-- Table Body -->
+        <div class="table-body">
+            <div class="table-row">
+                <div class="table-cell">1</div>
+                <div class="table-cell">Ann Culhane</div>
+                <div class="table-cell">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla...</div>
+                <div class="table-cell">
+                    <div class="status-tag">
+                        <span class="tag-info">Info</span>
+                    </div>
+                </div>
+                <div class="table-cell">$70.00 CAD</div>
+                <div class="table-cell">-$270.00 CAD</div>
+                <div class="table-cell">$500.00 CAD</div>
+            </div>
+            <!-- Repeat the above table-row for each customer data -->
+        </div>
+
+        <!-- Pagination -->
+        <div class="table-pagination">
+            <div class="pagination-info">1-10 of 97</div>
+            <div class="pagination-controls">
+                <div class="button">
+                    <span class="button-text">Rows per page:</span>
+                    <select style="width: 32px; height: 16px;">
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="30">30</option>
+                        <!-- Add more options as needed -->
+                    </select>
+                </div>
+                <div class="button">
+                    <div class="button-text">1/10</div>
+                    <div class="button">
+                        <div class="search-box">
+                            <div class="search-icon"></div>
+                            <input type="text" class="search-input" placeholder="Search...">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

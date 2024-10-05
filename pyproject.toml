@@ -11,6 +11,7 @@ mistralai = "^1.1.0"
 ruff = "^0.6.9"
 pydantic = "^2.9.2"
 pyyaml = "^6.0.2"
+pytest = "^8.3.3"
 
 
 [build-system]

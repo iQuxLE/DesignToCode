@@ -5,29 +5,37 @@ from src.DesignToCode.wrapper.json_wrapper import JsonWrapper
 
 class Runner:
 
-    def run(self):
-        imageEncoder = ImageEncoder()
-        jsonWrapper = JsonWrapper()
+    @staticmethod
+    def run():
+        image_encoder = ImageEncoder()
+        json_wrapper = JsonWrapper()
         client = MistralImageToCodeClient(api_key=None)
-        base64image = imageEncoder.encode_base64(
+        base64image = image_encoder.encode_base64(
             image_path="/Users/carlo/PycharmProjects/DesignToCode/src/DesignToCode/input/image/rendered_component.png")
-        json = jsonWrapper.read(
+        json = json_wrapper.read(
             json_source="/Users/carlo/PycharmProjects/DesignToCode/src/DesignToCode/input/json/context.json")
 
-        # Step 1: Describe the image
-        description = client.describe_image(
-            base64_image=base64image)
-        if not description:
-            print("Failed to get image description.")
-            return
+        # # Step 1: Describe the image
+        # description = client.describe_image(
+        #     base64_image=base64image,
+        #     json_context=json
+        #     )
+        # if not description:
+        #     print("Failed to get image description.")
+        #     return
 
-        print(description)
+        # print(description)
 
-        # # Step 2: Generate code based on the image description
-        # code = self.client.design_code_for_img(description)
+        # Step 2: Generate code based on the image description
+        # code = client.generate_code(json_context=json, prompt_template=None)
+        # print(code)
         # if not code:
         #     print("Failed to generate code.")
         #     return
+        initial_description, initial_code = client.initialise_html_code(
+                initial_encoded_img=base64image,
+                figma_json_context=json
+            )
 
 if __name__ == "__main__":
     runner = Runner()
