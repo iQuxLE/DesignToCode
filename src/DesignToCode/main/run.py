@@ -37,7 +37,7 @@ class Runner:
         new_encodedbase64_image = image_encoder.encode_base64(image_path=updated_image_path)
 
 
-        updated_description, updated_comparison, updated_code, updated_image_path,  = client.iterate_and_improve(
+        updated_description, updated_comparison, updated_code, updated_image_path = client.iterate_and_improve(
             initial_encoded_image=base64image,
             new_encoded_image=new_encodedbase64_image,
             initial_description=initial_description,

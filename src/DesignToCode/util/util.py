@@ -1,18 +1,27 @@
+import json
 import logging
 import re
 from pathlib import Path
 from typing import Dict
 
 
-def parse_new_and_compared_description_seperately(new_and_compared_description: Dict) -> tuple[str, str]:
+def parse_new_and_compared_description_seperately(new_and_compared_description: str) -> tuple[str, str]:
+    print("TYPE OF INPUT")
+    print(type(new_and_compared_description))
     new_description = ""
     comparison_of_descriptions = ""
-    if isinstance(new_and_compared_description, Dict):
-        for k, _ in new_and_compared_description.items():
-            new_description = k["new_description"]
-            comparison_of_descriptions = k["comparison_of_old_and_new_description"]
-    else:
-        raise ValueError("Output format of previous response is not JSON")
+    pattern = re.compile(r"```json(.*?)```", re.DOTALL)
+    match = pattern.search(new_and_compared_description)
+    print("MATCH !!! IMPORTANT DEBUG")
+    print(match)
+    if match:
+        json_text = match.group(1).strip()
+        try:
+            actual_json = json.loads(json_text)
+            new_description = actual_json.get('new_description', '')
+            comparison_of_descriptions = actual_json.get('comparison_of_descriptions', '')
+        except Exception as e:
+            raise("There is no JSON string output or the regular expression does not fit")
 
     return new_description, comparison_of_descriptions
 

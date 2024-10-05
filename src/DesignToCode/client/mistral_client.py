@@ -9,6 +9,7 @@ from pydantic import BaseModel
 
 from dotenv import load_dotenv
 
+from DesignToCode.client.metadata import MistralRequestPayload
 from DesignToCode.client.prompt_generator import PromptGenerator
 from DesignToCode.util.util import parse_new_and_compared_description_seperately, convertapi_call, \
     save_generate_code_to_html
@@ -118,6 +119,8 @@ class MistralImageToCodeClient:
         prompt_generator = PromptGenerator()
         initial_pixtral_prompt = prompt_generator.generate_initial_image_description_prompt(initial_encoded_img, figma_json_context)
 
+        print(f"INITIAL PIXTRAL PROMPT: {initial_pixtral_prompt}")
+
         image_description = self.describe_image(
             prompt = initial_pixtral_prompt
             )
@@ -150,7 +153,7 @@ class MistralImageToCodeClient:
             new_encoded_image,
             figma_json_context,
             initial_code,
-            updated_code: Optional,
+            updated_code: Optional = None,
             out:str = "2_iterative_pmg_from_html"
     ):
         prompt_generator = PromptGenerator()
@@ -164,8 +167,17 @@ class MistralImageToCodeClient:
         )
 
         new_and_compared_description = self.describe_image(
-            prompt=compare_description_prompt
+            prompt=compare_description_prompt # because json output wants json
         )
+
+        with open("/Users/carlo/PycharmProjects/DesignToCode/src/DesignToCode/output/file.txt", "w") as f:
+            f.write(new_and_compared_description)
+
+        logging.info("IMAGE DESCRIPTION DONE")
+        logging.info(f"{new_and_compared_description}")
+        logging.info(f"VERY VERY IMPORTANT BUG")
+        logging.info(f"{type(new_and_compared_description)}")
+        print(new_and_compared_description)
 
         updated_description, comparison_of_descriptions = parse_new_and_compared_description_seperately(new_and_compared_description)
 
@@ -192,6 +204,9 @@ class MistralImageToCodeClient:
         updated_code = self.generate_code(
             prompt_template=new_code_prompt
         )
+
+        logging.info("UPDATED CODE DONE")
+        logging.info(f"{updated_code}")
 
         html_file, path = save_generate_code_to_html(updated_code)
         logging.info(f" PATH = {path}")
