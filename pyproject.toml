@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "designtocode"
+version = "0.1.0"
+description = ""
+authors = ["iQuxLE <ckroll95@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+mistralai = "^1.1.0"
+ruff = "^0.6.9"
+pydantic = "^2.9.2"
+pyyaml = "^6.0.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
